@@ -1,5 +1,9 @@
-### Saludo correcto
+### Saludo por defecto (sin parámetro) -> Responde 200 OK
 GET http://localhost:8080/api/v1/saludo
+Accept: application/json
+
+### Saludo personalizado (con parámetro nombre=Ada) -> Responde 200 OK
+GET http://localhost:8080/api/v1/saludo?nombre=Ada
 Accept: application/json
 
 ### Ruta inexistente: debe responder 404
