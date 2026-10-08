@@ -25,4 +25,14 @@ public record Alumno(Long id, String matricula, String nombre, String correo, Es
         // 3. Se obtiene otro valor; las referencias al valor anterior no cambian.
         return new Alumno(id, matricula, nombre, correo, EstatusAlumno.BAJA);
     }
+
+    public Alumno reactivar()
+    {
+        return new Alumno(
+            this.id,
+            this.matricula,
+            this.nombre,
+            this.correo,EstatusAlumno.ACTIVO
+        );
+    }
 }

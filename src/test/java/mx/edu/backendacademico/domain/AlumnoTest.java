@@ -22,4 +22,28 @@ class AlumnoTest {
     @Test void materiaRechazaCreditosNoPositivos() {
         assertThrows(IllegalArgumentException.class, () -> new Materia(null, "M1", "Análisis", 0));
     }
+
+    @Test
+    void reactivarConservaIdentidadSinModificarElOriginal() {
+        Alumno alumnoOriginal = new Alumno(1L, "A001", "Ada", "ada@u.mx", EstatusAlumno.ACTIVO);
+        Alumno alumnoEnBaja = alumnoOriginal.darDeBaja();
+
+        Alumno alumnoReactivado = alumnoEnBaja.reactivar();
+
+        assertEquals(EstatusAlumno.ACTIVO, alumnoReactivado.estatus());
+        assertEquals(alumnoEnBaja.id(), alumnoReactivado.id());
+        assertEquals(alumnoEnBaja.matricula(), alumnoReactivado.matricula());
+        assertEquals(EstatusAlumno.BAJA, alumnoEnBaja.estatus());
+        assertEquals(EstatusAlumno.ACTIVO, alumnoOriginal.estatus());
+    }
+
+    @Test
+    void dosAlumnosConMismoIdYDistintoCorreoShareIdentidad() {
+        Alumno alumnoV1 = new Alumno(1L, "A001", "Ada Lovelace", "ada.viejo@u.mx", EstatusAlumno.ACTIVO);
+        Alumno alumnoV2 = new Alumno(1L, "A001", "Ada Lovelace", "ada.nuevo@u.mx", EstatusAlumno.ACTIVO);
+
+        assertEquals(alumnoV1.id(), alumnoV2.id());
+        assertEquals(alumnoV1.matricula(), alumnoV2.matricula());
+        assertNotEquals(alumnoV1.correo(), alumnoV2.correo());
+    }
 }
