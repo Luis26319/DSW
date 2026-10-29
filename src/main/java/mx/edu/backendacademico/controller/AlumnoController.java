@@ -36,7 +36,7 @@ public class AlumnoController {
 
     // El servicio asigna identidad; ResponseEntity publica 201 y Location.
     @PostMapping
-    public ResponseEntity<AlumnoResponse> crear(@RequestBody @Valid CrearAlumnoRequest request) {
+    public ResponseEntity<AlumnoResponse> crear(@Valid @RequestBody CrearAlumnoRequest request) {
         var creado = service.crear(request.matricula(), request.nombre(), request.correo());
         return ResponseEntity.created(URI.create("/api/v1/alumnos/" + creado.id())).body(AlumnoMapper.toResponse(creado));
     }
