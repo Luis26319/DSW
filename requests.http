@@ -1,0 +1,33 @@
+@baseUrl = http://localhost:8080/api/v1
+
+### Crear alumno: 201 y Location
+POST {{baseUrl}}/alumnos
+Content-Type: application/json
+
+{"matricula":"A001","nombre":"Ada Lovelace","correo":"ada@universidad.mx"}
+
+### Listar alumnos
+GET {{baseUrl}}/alumnos
+
+### Consultar alumno
+GET {{baseUrl}}/alumnos/1
+
+### Actualizar alumno
+PUT {{baseUrl}}/alumnos/1
+Content-Type: application/json
+
+{"nombre":"Ada Byron","correo":"ada.byron@universidad.mx"}
+
+### Eliminar alumno: 204
+DELETE {{baseUrl}}/alumnos/1
+### Body inválido: 400 con campos
+POST {{baseUrl}}/alumnos
+Content-Type: application/json
+
+{"matricula":"","nombre":"A","correo":"no-es-correo"}
+
+### Matrícula duplicada: ejecutar dos veces para obtener 409
+POST {{baseUrl}}/alumnos
+Content-Type: application/json
+
+{"matricula":"A001","nombre":"Otra persona","correo":"otra@universidad.mx"}
