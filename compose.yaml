@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: academico
+      POSTGRES_USER: academico
+      POSTGRES_PASSWORD: academico
+    ports:
+      - "5432:5432"
+    volumes:
+      - datos_academicos:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U academico"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  datos_academicos:
