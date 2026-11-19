@@ -12,6 +12,6 @@ public record PaginaResponse<T>(List<T> contenido, int pagina, int tamano,
 
     public static <T> PaginaResponse<T> de(Page<T> pagina) {
         return new PaginaResponse<>(pagina.getContent(), pagina.getNumber(),
-                pagina.getSize(), pagina.getTotalElements(), pagina.getTotalPages());
+            pagina.getSize(), pagina.getTotalElements(), pagina.getTotalPages());
     }
 }

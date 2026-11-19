@@ -32,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         var detalle = problema(HttpStatus.BAD_REQUEST, "DATOS_INVALIDOS", "Revisa los campos indicados");
         // Conserva varios errores de un campo sin publicar el valor rechazado.
         List<CampoInvalido> campos = ex.getBindingResult().getFieldErrors().stream()
-                .map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
+            .map(e -> new CampoInvalido(e.getField(), e.getDefaultMessage())).toList();
         detalle.setProperty("campos", campos);
         return handleExceptionInternal(ex, detalle, headers, status, request);
     }
@@ -44,9 +44,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             if (causa instanceof org.hibernate.exception.ConstraintViolationException restriccion) {
                 String nombre = restriccion.getConstraintName();
                 if ("fk_inscripcion_alumno".equalsIgnoreCase(nombre) ||
-                        "fk_inscripcion_materia".equalsIgnoreCase(nombre)) {
+                    "fk_inscripcion_materia".equalsIgnoreCase(nombre)) {
                     return problema(HttpStatus.CONFLICT, "RECURSO_REFERENCIADO",
-                            "El recurso participa en una inscripción y no puede eliminarse");
+                        "El recurso participa en una inscripción y no puede eliminarse");
                 }
             }
             causa = causa.getCause();
@@ -57,7 +57,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(OperacionAcademicaException.class)
     ProblemDetail academica(OperacionAcademicaException ex) {
         var status = ex.getCodigo().equals("MATERIA_NO_ENCONTRADA")
-                ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
+            ? HttpStatus.NOT_FOUND : HttpStatus.CONFLICT;
         return problema(status, ex.getCodigo(), ex.getMessage());
     }
 

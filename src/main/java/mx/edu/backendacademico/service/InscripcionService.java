@@ -32,7 +32,7 @@ public class InscripcionService {
     public Long inscribir(Long alumnoId, Long materiaId) {
         // 1. Serializa las admisiones de la misma materia hasta commit/rollback.
         var materia = materias.bloquearPorId(materiaId).orElseThrow(() ->
-                new OperacionAcademicaException("MATERIA_NO_ENCONTRADA", "No existe la materia"));
+            new OperacionAcademicaException("MATERIA_NO_ENCONTRADA", "No existe la materia"));
         var alumno = alumnos.findById(alumnoId).orElseThrow(() -> new AlumnoNoEncontradoException(alumnoId));
         // 2. Comprueba reglas después de adquirir el bloqueo común.
         if (alumno.toDomain().estatus() != EstatusAlumno.ACTIVO) {
@@ -54,8 +54,8 @@ public class InscripcionService {
         if (!alumnos.existsById(alumnoId)) throw new AlumnoNoEncontradoException(alumnoId);
         // Traduce a DTO dentro de la transacción, con materia cargada por EntityGraph.
         var pagina = inscripciones.findByAlumnoId(alumnoId, pageable).map(i ->
-                new InscripcionResponse(i.getId(), i.getMateria().getId(),
-                        i.getMateria().getNombre(), i.getFecha()));
+            new InscripcionResponse(i.getId(), i.getMateria().getId(),
+                i.getMateria().getNombre(), i.getFecha()));
         return PaginaResponse.de(pagina);
     }
 }

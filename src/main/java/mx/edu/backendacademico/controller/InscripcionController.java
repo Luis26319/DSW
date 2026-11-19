@@ -21,7 +21,7 @@ public class InscripcionController {
 
     @PostMapping
     public ResponseEntity<Map<String, Long>> inscribir(@RequestParam Long alumnoId,
-                                                       @RequestParam Long materiaId) {
+                                                      @RequestParam Long materiaId) {
         if (alumnoId <= 0 || materiaId <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Identificadores positivos requeridos");
         }
@@ -32,12 +32,12 @@ public class InscripcionController {
 
     @GetMapping("/alumno/{alumnoId}")
     public PaginaResponse<InscripcionResponse> historial(@PathVariable Long alumnoId,
-                                                         @RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "20") int size,
-                                                         @RequestParam(defaultValue = "id") String sort) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id") String sort) {
         // Lista blanca de campos y límites explícitos para memoria y consultas.
         if (alumnoId <= 0 || page < 0 || size < 1 || size > 50 ||
-                !(sort.equals("id") || sort.equals("fecha"))) {
+            !(sort.equals("id") || sort.equals("fecha"))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Paginación o identificador inválido");
         }
         Sort orden = Sort.by(sort);
