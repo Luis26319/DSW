@@ -11,6 +11,11 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import org.springframework.http.MediaType;
+
+
 @WebMvcTest(AlumnoController.class)
 @AutoConfigureMockMvc(addFilters=false)
 class AlumnoControllerTest {
@@ -28,5 +33,20 @@ class AlumnoControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.codigo").value("DATOS_INVALIDOS"));
         org.mockito.Mockito.verifyNoInteractions(service);
+    }
+
+    @Test void crearDevuelve201YLocationConElIdAsignado() throws Exception {
+        // El id 7 lo asigna el "servicio"; el Location debe usarlo, no la matrícula.
+        when(service.crear("A1", "Ada", "ada@u.mx"))
+                .thenReturn(new Alumno(7L, "A1", "Ada", "ada@u.mx", EstatusAlumno.ACTIVO));
+
+        mvc.perform(post("/api/v1/alumnos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"matricula\":\"A1\",\"nombre\":\"Ada\",\"correo\":\"ada@u.mx\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/api/v1/alumnos/7"))
+                .andExpect(jsonPath("$.matricula").value("A1"));
+
+        verify(service).crear("A1", "Ada", "ada@u.mx");
     }
 }
