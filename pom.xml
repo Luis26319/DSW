@@ -9,9 +9,9 @@
     </parent>
     <groupId>mx.edu</groupId>
     <artifactId>backend-academico</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
-    <name>backend-academico-u09</name>
-    <description>Proyecto acumulativo de Desarrollo Web - Unidad 09</description>
+    <version>0.0.10-SNAPSHOT</version>
+    <name>backend-academico-u10</name>
+    <description>Proyecto acumulativo de Desarrollo Web - Unidad 10</description>
     <properties>
         <java.version>21</java.version>
         <!-- JDK 25 compila bytecode y API de Java 21, sin funciones preview. -->
@@ -64,6 +64,15 @@
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers-postgresql</artifactId>
             <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

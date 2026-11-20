@@ -1,39 +1,44 @@
-@baseUrl = http://localhost:8080/api/v1
+# Cuentas conocidas de laboratorio. Mantén las cookies habilitadas en HTTP Client.
+# 1. Ejecuta GET /csrf como docente. 2. Copia token a csrf. 3. Conserva JSESSIONID.
+@csrf = COPIA_EL_TOKEN_DE_LA_RESPUESTA
 
-### Crear alumno: 201 y Location
-POST {{baseUrl}}/alumnos
+### Saludo público
+GET http://localhost:8080/api/v1/saludo
+
+### Autenticación y obtención del token
+GET http://localhost:8080/api/v1/csrf
+Authorization: Basic docente docente123
+
+### Crear con credenciales y token de la misma sesión
+POST http://localhost:8080/api/v1/alumnos
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
 Content-Type: application/json
 
-{"matricula":"A001","nombre":"Ada Lovelace","correo":"ada@universidad.mx"}
+{"matricula":"A001","nombre":"Ada Lovelace","correo":"ada@u.mx"}
 
-### Listar alumnos
-GET {{baseUrl}}/alumnos
+### Consultar con rol de lectura
+GET http://localhost:8080/api/v1/alumnos
+Authorization: Basic alumno alumno123
 
-### Consultar alumno
-GET {{baseUrl}}/alumnos/1
-
-### Actualizar alumno
-PUT {{baseUrl}}/alumnos/1
+### Sustituir nombre y correo; repite para observar el mismo estado editable
+PUT http://localhost:8080/api/v1/alumnos/1
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
 Content-Type: application/json
 
-{"nombre":"Ada Byron","correo":"ada.byron@universidad.mx"}
+{"nombre":"Ada Byron","correo":"ada.byron@u.mx"}
 
-### Eliminar alumno: 204
-DELETE {{baseUrl}}/alumnos/1
-### Body inválido: 400 con campos
-POST {{baseUrl}}/alumnos
-Content-Type: application/json
-
-{"matricula":"","nombre":"A","correo":"no-es-correo"}
-
-### Matrícula duplicada: ejecutar dos veces para obtener 409
-POST {{baseUrl}}/alumnos
-Content-Type: application/json
-
-{"matricula":"A001","nombre":"Otra persona","correo":"otra@universidad.mx"}
-
-### U08: crea primero un alumno y sustituye alumnoId por su id real
+### Crear inscripción después de sustituir el id real del alumno
 POST http://localhost:8080/api/v1/inscripciones?alumnoId=1&materiaId=1
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
 
-### Historial paginado con orden estable
+### Historial
 GET http://localhost:8080/api/v1/inscripciones/alumno/1?page=0&size=5&sort=fecha
+Authorization: Basic docente docente123
+
+### Ejecuta sólo para un alumno sin inscripciones, con su id real
+DELETE http://localhost:8080/api/v1/alumnos/2
+Authorization: Basic docente docente123
+X-CSRF-TOKEN: {{csrf}}
