@@ -32,22 +32,22 @@ class SeguridadTest {
     @Test void alumnoNoPuedeCrearAunqueTengaCsrf() throws Exception {
         // Token correcto: el 403 de esta prueba se debe al rol.
         mvc.perform(post("/api/v1/alumnos").with(httpBasic("alumno", "alumno123"))
-                        .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(DATOS))
-                .andExpect(status().isForbidden());
+            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(DATOS))
+            .andExpect(status().isForbidden());
     }
 
     @Test void docenteSinCsrfRecibe403() throws Exception {
         // Rol correcto: esta vez falta la protección de origen de la operación.
         mvc.perform(post("/api/v1/alumnos").with(httpBasic("docente", "docente123"))
-                        .contentType(MediaType.APPLICATION_JSON).content(DATOS))
-                .andExpect(status().isForbidden());
+            .contentType(MediaType.APPLICATION_JSON).content(DATOS))
+            .andExpect(status().isForbidden());
     }
 
     @Test void docenteConCsrfPuedeCrear() throws Exception {
         when(service.crear(anyString(), anyString(), anyString())).thenReturn(
-                new Alumno(1L, "S1", "Ada", "ada@u.mx", EstatusAlumno.ACTIVO));
+            new Alumno(1L, "S1", "Ada", "ada@u.mx", EstatusAlumno.ACTIVO));
         mvc.perform(post("/api/v1/alumnos").with(httpBasic("docente", "docente123"))
-                        .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(DATOS))
-                .andExpect(status().isCreated());
+            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(DATOS))
+            .andExpect(status().isCreated());
     }
 }

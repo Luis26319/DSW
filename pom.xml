@@ -9,9 +9,9 @@
     </parent>
     <groupId>mx.edu</groupId>
     <artifactId>backend-academico</artifactId>
-    <version>0.0.10-SNAPSHOT</version>
-    <name>backend-academico-u10</name>
-    <description>Proyecto acumulativo de Desarrollo Web - Unidad 10</description>
+    <version>0.0.11-SNAPSHOT</version>
+    <name>backend-academico-u11</name>
+    <description>Proyecto acumulativo de Desarrollo Web - Unidad 11</description>
     <properties>
         <java.version>21</java.version>
         <!-- JDK 25 compila bytecode y API de Java 21, sin funciones preview. -->

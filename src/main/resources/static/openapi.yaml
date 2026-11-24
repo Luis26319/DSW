@@ -1,0 +1,254 @@
+openapi: 3.1.0
+info:
+  title: Backend Académico
+  version: 1.0.0
+  description: API del laboratorio. HTTP Basic con CSRF y cookie de sesión para escrituras.
+servers:
+  - url: http://localhost:8080
+security:
+  - basicAuth: []
+paths:
+  /api/v1/saludo:
+    get:
+      summary: Consulta un saludo público
+      security: []
+      responses:
+        '200':
+          description: Saludo en JSON
+  /api/v1/csrf:
+    get:
+      summary: Obtiene un token CSRF para la sesión autenticada
+      description: Conserva JSESSIONID y envía el token en X-CSRF-TOKEN al escribir.
+      responses:
+        '200':
+          description: Nombre de cabecera y token
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [headerName, token]
+                properties:
+                  headerName: {type: string}
+                  token: {type: string}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+  /api/v1/alumnos:
+    get:
+      summary: Lista alumnos del laboratorio
+      description: Conjunto pequeño sin paginación. Roles ALUMNO, DOCENTE o ADMIN.
+      responses:
+        '200':
+          description: Lista, posiblemente vacía
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {$ref: '#/components/schemas/Alumno'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+    post:
+      summary: Crea un alumno
+      description: Requiere DOCENTE o ADMIN y un token CSRF de la misma sesión.
+      parameters:
+        - {$ref: '#/components/parameters/Csrf'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/CrearAlumno'}
+      responses:
+        '201':
+          description: Alumno creado
+          headers:
+            Location:
+              description: URI de consulta del alumno creado
+              schema: {type: string, format: uri-reference}
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Alumno'}
+        '400': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+        '409': {$ref: '#/components/responses/Problema'}
+  /api/v1/alumnos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: {type: integer, format: int64}
+    get:
+      summary: Consulta un alumno
+      responses:
+        '200':
+          description: Alumno encontrado
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Alumno'}
+        '400': {$ref: '#/components/responses/Problema'}
+        '404': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+    put:
+      summary: Sustituye nombre y correo del alumno
+      parameters:
+        - {$ref: '#/components/parameters/Csrf'}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ActualizarAlumno'}
+      responses:
+        '200':
+          description: Representación editable actualizada
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/Alumno'}
+        '400': {$ref: '#/components/responses/Problema'}
+        '404': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+    delete:
+      summary: Elimina un alumno sin relaciones que impidan el borrado
+      parameters:
+        - {$ref: '#/components/parameters/Csrf'}
+      responses:
+        '204': {description: Eliminado, sin cuerpo de respuesta}
+        '400': {$ref: '#/components/responses/Problema'}
+        '404': {$ref: '#/components/responses/Problema'}
+        '409': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+  /api/v1/inscripciones:
+    post:
+      summary: Inscribe un alumno activo si hay cupo
+      description: Requiere DOCENTE o ADMIN. La repetición produce 409.
+      parameters:
+        - {$ref: '#/components/parameters/Csrf'}
+        - name: alumnoId
+          in: query
+          required: true
+          schema: {type: integer, format: int64, minimum: 1}
+        - name: materiaId
+          in: query
+          required: true
+          schema: {type: integer, format: int64, minimum: 1}
+      responses:
+        '201':
+          description: Inscripción creada; consulta mediante el historial por alumno
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id: {type: integer, format: int64}
+        '400': {$ref: '#/components/responses/Problema'}
+        '404': {$ref: '#/components/responses/Problema'}
+        '409': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+  /api/v1/inscripciones/alumno/{alumnoId}:
+    get:
+      summary: Obtiene el historial paginado de un alumno
+      parameters:
+        - name: alumnoId
+          in: path
+          required: true
+          schema: {type: integer, format: int64, minimum: 1}
+        - name: page
+          in: query
+          schema: {type: integer, minimum: 0, default: 0}
+        - name: size
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 50, default: 20}
+        - name: sort
+          in: query
+          schema: {type: string, enum: [id, fecha], default: id}
+      responses:
+        '200':
+          description: Página del historial
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [contenido, pagina, tamano, totalElementos, totalPaginas]
+                properties:
+                  contenido:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, materiaId, materia, fecha]
+                      properties:
+                        id: {type: integer, format: int64}
+                        materiaId: {type: integer, format: int64}
+                        materia: {type: string}
+                        fecha:
+                          type: string
+                          description: Fecha UTC sin sufijo de zona en este contrato de laboratorio
+                  pagina: {type: integer}
+                  tamano: {type: integer}
+                  totalElementos: {type: integer, format: int64}
+                  totalPaginas: {type: integer}
+        '400': {$ref: '#/components/responses/Problema'}
+        '404': {$ref: '#/components/responses/Problema'}
+        '401': {$ref: '#/components/responses/NoAutenticado'}
+        '403': {$ref: '#/components/responses/Prohibido'}
+components:
+  securitySchemes:
+    basicAuth: {type: http, scheme: basic}
+  parameters:
+    Csrf:
+      name: X-CSRF-TOKEN
+      in: header
+      required: true
+      description: Token obtenido de /api/v1/csrf con la misma cookie de sesión
+      schema: {type: string}
+  responses:
+    NoAutenticado:
+      description: Falta autenticación válida; con token CSRF ausente una escritura puede ser rechazada antes con 403
+    Prohibido:
+      description: Rol insuficiente o token CSRF ausente o inválido; error de la cadena de filtros
+    Problema:
+      description: Error explicado por el contrato MVC o de aplicación
+      content:
+        application/problem+json:
+          schema: {$ref: '#/components/schemas/Problema'}
+  schemas:
+    CrearAlumno:
+      type: object
+      required: [matricula, nombre, correo]
+      properties:
+        matricula: {type: string, minLength: 1, maxLength: 30}
+        nombre: {type: string, minLength: 3, maxLength: 120}
+        correo: {type: string, format: email, minLength: 1, maxLength: 160}
+    ActualizarAlumno:
+      type: object
+      required: [nombre, correo]
+      properties:
+        nombre: {type: string, minLength: 3, maxLength: 120}
+        correo: {type: string, format: email, minLength: 1, maxLength: 160}
+    Alumno:
+      type: object
+      required: [id, matricula, nombre, correo, estatus]
+      properties:
+        id: {type: integer, format: int64}
+        matricula: {type: string}
+        nombre: {type: string}
+        correo: {type: string}
+        estatus: {type: string, enum: [ACTIVO, BAJA]}
+    Problema:
+      type: object
+      properties:
+        type: {type: string, format: uri-reference}
+        title: {type: string}
+        status: {type: integer}
+        detail: {type: string}
+        instance: {type: string, format: uri-reference}
+        codigo: {type: string}
+        referencia: {type: string}
+        campos:
+          type: array
+          items:
+            type: object
+            properties:
+              campo: {type: string}
+              mensaje: {type: string}
