@@ -20,11 +20,13 @@ public class SecurityConfig {
         http.csrf(withDefaults());
         // 2. La primera regla coincidente determina el acceso.
         http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/saludo", "/openapi.yaml", "/error").permitAll()
-            .requestMatchers("/api/v1/csrf").authenticated()
-            .requestMatchers(HttpMethod.GET, "/api/v1/alumnos/**").hasAnyRole("ALUMNO", "DOCENTE", "ADMIN")
-            .requestMatchers("/api/v1/**").hasAnyRole("DOCENTE", "ADMIN")
-            .anyRequest().denyAll());
+                .requestMatchers("/api/v1/saludo", "/openapi.yaml", "/error").permitAll()
+                .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                .requestMatchers("/actuator/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/csrf").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/v1/alumnos/**").hasAnyRole("ALUMNO", "DOCENTE", "ADMIN")
+                .requestMatchers("/api/v1/**").hasAnyRole("DOCENTE", "ADMIN")
+                .anyRequest().denyAll());
         // 3. Basic autentica credenciales; TLS protege su transporte fuera de localhost.
         http.httpBasic(withDefaults());
         return http.build();
@@ -39,8 +41,8 @@ public class SecurityConfig {
     UserDetailsService users(PasswordEncoder encoder) {
         // Cuentas públicas de laboratorio; no contienen credenciales reales.
         return new InMemoryUserDetailsManager(
-            User.withUsername("alumno").password(encoder.encode("alumno123")).roles("ALUMNO").build(),
-            User.withUsername("docente").password(encoder.encode("docente123")).roles("DOCENTE").build(),
-            User.withUsername("admin").password(encoder.encode("admin123")).roles("ADMIN").build());
+                User.withUsername("alumno").password(encoder.encode("alumno123")).roles("ALUMNO").build(),
+                User.withUsername("docente").password(encoder.encode("docente123")).roles("DOCENTE").build(),
+                User.withUsername("admin").password(encoder.encode("admin123")).roles("ADMIN").build());
     }
 }

@@ -15,7 +15,7 @@ class CalendarioClientTest {
         var builder = RestClient.builder().baseUrl("https://calendario.example");
         var servidor = MockRestServiceServer.bindTo(builder).build();
         servidor.expect(requestTo("https://calendario.example/periodos/2026A"))
-                .andRespond(withSuccess("""
+            .andRespond(withSuccess("""
                 {"clave":"2026A","inicio":"2026-01-12","fin":"2026-06-19"}
                 """, MediaType.APPLICATION_JSON));
         var periodo = new CalendarioClient(builder.build()).consultarPeriodo("2026A");
@@ -28,9 +28,9 @@ class CalendarioClientTest {
         var builder = RestClient.builder().baseUrl("https://calendario.example");
         var servidor = MockRestServiceServer.bindTo(builder).build();
         servidor.expect(requestTo("https://calendario.example/periodos/2026A"))
-                .andRespond(withServiceUnavailable());
+            .andRespond(withServiceUnavailable());
         assertThrows(RestClientResponseException.class, () ->
-                new CalendarioClient(builder.build()).consultarPeriodo("2026A"));
+            new CalendarioClient(builder.build()).consultarPeriodo("2026A"));
         servidor.verify();
     }
 }

@@ -9,9 +9,9 @@
     </parent>
     <groupId>mx.edu</groupId>
     <artifactId>backend-academico</artifactId>
-    <version>0.0.11-SNAPSHOT</version>
-    <name>backend-academico-u11</name>
-    <description>Proyecto acumulativo de Desarrollo Web - Unidad 11</description>
+    <version>0.0.12-SNAPSHOT</version>
+    <name>backend-academico-u12</name>
+    <description>Proyecto acumulativo de Desarrollo Web - Unidad 12</description>
     <properties>
         <java.version>21</java.version>
         <!-- JDK 25 compila bytecode y API de Java 21, sin funciones preview. -->
@@ -74,6 +74,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
