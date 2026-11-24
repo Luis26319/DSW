@@ -80,4 +80,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     public record CampoInvalido(String campo, String mensaje) { }
+
+    @ExceptionHandler(IdempotenciaConflictoException.class)
+    ProblemDetail conflictoIdempotencia(IdempotenciaConflictoException ex) {
+        return problema(HttpStatus.CONFLICT, "IDEMPOTENCIA_CONFLICTO", ex.getMessage());
+    }
 }
